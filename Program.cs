@@ -14,8 +14,18 @@ namespace WebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    build => build.WithOrigins("https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
             var app = builder.Build();
             app.UseMiddleware<ModelStateValidationMiddleware>();
+
+            app.UseCors("AllowSpecificOrigin");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
