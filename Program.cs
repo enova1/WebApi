@@ -1,4 +1,6 @@
 
+using DataAccess;
+
 namespace WebApi
 {
     public class Program
@@ -19,6 +21,16 @@ namespace WebApi
                         .AllowAnyMethod()
                         .AllowAnyHeader());
             });
+
+
+            builder.Services.AddDbContext<AuthorizedUserDbContext>();
+            builder.Services.AddDbContext<EmployeeDbContext>();
+
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+            builder.Services.AddSingleton<IConfiguration>(configuration);
 
             // Add services to the container.
             var app = builder.Build();
