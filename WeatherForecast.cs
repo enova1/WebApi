@@ -1,5 +1,8 @@
 namespace WebApi
 {
+    /// <summary>
+    /// Weather Forecast model for the API.
+    /// </summary>
     public class WeatherForecast
     {
         public DateOnly Date { get; set; }

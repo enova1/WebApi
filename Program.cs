@@ -5,15 +5,13 @@ namespace WebApi
     {
         public static void Main(string[] args)
         {
+            // Create the builder and services
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin",
@@ -22,9 +20,12 @@ namespace WebApi
                         .AllowAnyHeader());
             });
 
+            // Add services to the container.
             var app = builder.Build();
-            app.UseMiddleware<ModelStateValidationMiddleware>();
 
+            // Configure the HTTP request pipeline.
+            app.UseMiddleware<ModelStateValidationMiddleware>();
+            // Enable CORS
             app.UseCors("AllowSpecificOrigin");
 
             // Configure the HTTP request pipeline.
@@ -35,12 +36,10 @@ namespace WebApi
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
 
+            // Run the application.
             app.Run();
         }
     }

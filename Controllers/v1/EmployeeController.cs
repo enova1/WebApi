@@ -4,11 +4,19 @@ using WebApi.Models;
 
 namespace WebApi.Controllers.v1;
 
+/// <summary>
+/// Employee Controller for the API.
+/// </summary>
 [Produces("application/json")]
 [ApiController]
 [Route("v1/[controller]")]
 public class EmployeeController : Controller
 {
+    /// <summary>
+    /// Create a new employee. 
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     [HttpPost()]
     public Task<IActionResult> Create(Employees data)
     {
@@ -21,10 +29,16 @@ public class EmployeeController : Controller
         return Task.FromResult<IActionResult>(StatusCode(200, data));
     }
 
+    /// <summary>
+    /// Get an employee by their employeeId.
+    /// </summary>
+    /// <param name="employeeId"></param>
+    /// <returns></returns>
     [HttpGet("employeeId")]
     public Task<IActionResult> GetTask(int employeeId)
     {
 
+        // This is just a mock response
         var data = new Employees
         {
             EmployeeId = employeeId,

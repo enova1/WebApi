@@ -1,0 +1,5 @@
+
+*.bin
+/.vs/WebApi
+/bin/Debug/net8.0
+/obj
