@@ -3,3 +3,6 @@
 /.vs/WebApi
 /bin/Debug/net8.0
 /obj
+app.db-wal
+app.db
+app.db-shm
