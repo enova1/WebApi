@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="app.db" />
+    <None Remove="app.db-shm" />
+    <None Remove="app.db-wal" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.12" />
     <PackageReference Include="Hangfire.EntityFrameworkCore" Version="0.6.0" />
     <PackageReference Include="Hangfire.SQLite.Core" Version="1.0.2" />

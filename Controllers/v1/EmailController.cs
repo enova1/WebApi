@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Models.Hangfire;
 
 namespace WebApi.Controllers.v1
 {
@@ -8,16 +9,21 @@ namespace WebApi.Controllers.v1
     [Route("v1/[controller]")]
     public class EmailController : ControllerBase
     {
+        private readonly IBackgroundJobClient _backgroundJobClient;
+
         /// <inheritdoc />
-        public EmailController() {}
+        public EmailController(IBackgroundJobClient backgroundJobClient)
+        {
+            _backgroundJobClient = backgroundJobClient;
+        }
 
         [HttpPost]
-        public IActionResult ScheduleDailyEmail()
+        public IActionResult ScheduleDailyEmail(HangfireRequest data)
         {
             try
             {
                 // Schedule the SendDailyEmailAsync method of EmailService to run daily
-               RecurringJob.AddOrUpdate<EmailService>("SendDailyEmail", x => x.SendDailyEmailAsync(), Cron.Minutely);
+               RecurringJob.AddOrUpdate<EmailService>("SendDailyEmail", x => x.SendDailyEmail(), Cron.Minutely);
 
                 return Ok("Daily email job scheduled successfully");
             }
@@ -31,10 +37,11 @@ namespace WebApi.Controllers.v1
     // Example EmailService class with a method to send daily emails
     public class EmailService
     {
-        public async Task SendDailyEmailAsync()
+        [AutomaticRetry(Attempts = 3)]
+        public void SendDailyEmail()
         {
-            // Asynchronous sending logic here
-            await Task.Delay(1000); // Simulated asynchronous operation
+            //Send Logic
+            Console.WriteLine("DONE");
         }
     }
 }
