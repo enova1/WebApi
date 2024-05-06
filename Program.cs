@@ -6,6 +6,7 @@ using Hangfire.EntityFrameworkCore;
 using Hangfire.SqlServer;
 using Hangfire.SQLite;
 using WebApi.Controllers.v1;
+using WebApi.Services.Hangfire;
 
 namespace WebApi
 {
@@ -67,6 +68,10 @@ namespace WebApi
                 options.WorkerCount = 1;
             });
 
+            builder.Services.AddScoped<Continuations>();
+            builder.Services.AddScoped<Delayed>();
+            builder.Services.AddScoped<Recurring>();
+            builder.Services.AddScoped<RunOnce>();
 
             // Add services to the container.
             var app = builder.Build();
