@@ -3,3 +3,6 @@
 /.vs/WebApi
 /bin/Debug/net8.0
 /obj
+/hangfire.db
+/hangfire.db-shm
+/hangfire.db-wal
