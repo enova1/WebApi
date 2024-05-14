@@ -1,10 +1,9 @@
 ﻿namespace WebApi.Services;
 
-public class NotificationService
+public abstract class NotificationService
 {
-    public static object NotifyProcessingCompletion()
+    public static void NotifyProcessingCompletion()
     {
         Console.WriteLine("DONE");
-        return null!;
     }
 }

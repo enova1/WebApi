@@ -3,121 +3,111 @@ using Microsoft.EntityFrameworkCore;
 using DataAccess;
 using Hangfire.Dashboard;
 using Hangfire.EntityFrameworkCore;
-using Hangfire.SqlServer;
-using Hangfire.SQLite;
-using WebApi.Controllers.v1;
 using WebApi.Services.Hangfire;
+using Microsoft.OpenApi.Models;
 
-namespace WebApi
+namespace WebApi;
+
+public static class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        // Create the builder and services
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(c =>
         {
-            // Create the builder and services
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddCors(options =>
+            c.SwaggerDoc("v1", new OpenApiInfo
             {
-                options.AddPolicy("AllowSpecificOrigin",
-                    build => build.WithOrigins("https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+                Version = "v1",
+                Title = "Hangfire Microservice",
+                Description = "This Api Microservice is the main Hangfire scheduler service.</br></br><a href='https://localhost:7098/hangfire'>Hangfire dashboard</a>",
+                TermsOfService = new Uri("https://blazorui20230314133145.azurewebsites.net/privacy-policy"),
+                Contact = new OpenApiContact
+                {
+                    Name = "API Support",
+                    Email = "Support@B2Gnow.com",
+                    Url = new Uri("https://blazorui20230314133145.azurewebsites.net")
+                }
             });
-            // IConfigurationRoot configuration = new ConfigurationBuilder()
-            //     .SetBasePath(Directory.GetCurrentDirectory())
-            //     .AddJsonFile("appsettings.json")
-            //     .Build();
-            // builder.Services.AddSingleton<IConfiguration>(configuration);
-
-            // Add Hangfire services
-            // builder.Services.AddHangfire(globalConfiguration => globalConfiguration
-            //     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            //     .UseSimpleAssemblyNameTypeSerializer()
-            //     .UseRecommendedSerializerSettings()
-            //     .UseEFCoreStorage(optionsBuilder => { optionsBuilder.UseSqlite(@"Data Source=C:\Users\kozlo\source\GitHub\DAL\DataAccess\bin\Debug\net8.0\WebApi.db"); })
-            // );
-
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                                   ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
+            c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+        });
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin",
+                build => build
+                    .WithOrigins(
+                        "https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+        });
 
 
-            builder.Services.AddDbContext<AuthorizedUserDbContext>();
-            builder.Services.AddDbContext<EmployeeDbContext>();
-
-            builder.Services.AddHangfire(configuration =>
-                configuration.UseEFCoreStorage(dbContextOptionsBuilder =>
-                            dbContextOptionsBuilder.UseSqlite(connectionString),
-                        new EFCoreStorageOptions
-                        {
-                            CountersAggregationInterval = new TimeSpan(0, 5, 0),
-                            DistributedLockTimeout = new TimeSpan(0, 10, 0),
-                            JobExpirationCheckInterval = new TimeSpan(0, 30, 0),
-                            QueuePollInterval = new TimeSpan(0, 0, 15),
-                            Schema = string.Empty,
-                            SlidingInvisibilityTimeout = new TimeSpan(0, 5, 0),
-                        }).
-                    UseDatabaseCreator());
-
-            builder.Services.AddHangfireServer(options =>
-            {
-                options.WorkerCount = 1;
-            });
-
-            builder.Services.AddScoped<Continuations>();
-            builder.Services.AddScoped<Delayed>();
-            builder.Services.AddScoped<Recurring>();
-            builder.Services.AddScoped<RunOnce>();
-
-            // Add services to the container.
-            var app = builder.Build();
-
-            // Initialize Hangfire schema
-            // InitializeHangfireSchema(app.Services);
-
-            // Configure the HTTP request pipeline.
-            app.UseMiddleware<ModelStateValidationMiddleware>();
-            // Enable CORS
-            app.UseCors("AllowSpecificOrigin");
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseAuthorization();
-            app.MapControllers();
-
-            // Enable Hangfire dashboard (optional)
-            // app.UseHangfireDashboard(
-            //     string.Empty,
-            //     new DashboardOptions
-            //     {
-            //         AppPath = null,
-            //         Authorization = Array.Empty<IDashboardAuthorizationFilter>(),
-            //     });
+        var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
+                                 ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
 
 
+        builder.Services.AddDbContext<ApplicationDbContext>();
+        //builder.Services.AddDbContext<EmployeeDbContext>();
 
-            // Run the application.
-            app.Run();
+        builder.Services.AddHangfire(configuration =>
+            configuration.UseEFCoreStorage(dbContextOptionsBuilder =>
+                    dbContextOptionsBuilder.UseSqlite(hangfireConnectionString),
+                new EFCoreStorageOptions
+                {
+                    CountersAggregationInterval = new TimeSpan(0, 5, 0),
+                    DistributedLockTimeout = new TimeSpan(0, 10, 0),
+                    JobExpirationCheckInterval = new TimeSpan(0, 30, 0),
+                    QueuePollInterval = new TimeSpan(0, 0, 15),
+                    Schema = string.Empty,
+                    SlidingInvisibilityTimeout = new TimeSpan(0, 5, 0),
+                }).UseDatabaseCreator());
+
+        builder.Services.AddHangfireServer(options => { options.WorkerCount = 1; });
+
+        builder.Services.AddScoped<Continuations>();
+        builder.Services.AddScoped<Delayed>();
+        builder.Services.AddScoped<Recurring>();
+        builder.Services.AddScoped<RunOnce>();
+
+        // Add services to the container.
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        app.UseMiddleware<ModelStateValidationMiddleware>();
+
+        // Enable CORS
+        app.UseCors("AllowSpecificOrigin");
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
 
-        // private static void InitializeHangfireSchema(IServiceProvider serviceProvider)
-        // {
-        //     // Ensure Hangfire tables are created in the database
-        //     using (var scope = serviceProvider.CreateScope())
-        //     {
-        //         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        //         dbContext.Database.Migrate();
-        //     }
-        // }
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        // Enable Hangfire dashboard
+        app.UseHangfireDashboard(
+            "/hangfire",
+            new DashboardOptions
+            {
+                AppPath = "https://localhost:7098/swagger/index.html",
+                Authorization = Array.Empty<IDashboardAuthorizationFilter>(),
+                DarkModeEnabled = true,
+                DashboardTitle = "Hangfire BCT Dashboard",
+                DisplayStorageConnectionString = true,
+                DefaultRecordsPerPage = 10
+            });
+
+        // Run the application.
+        app.Run();
     }
 }

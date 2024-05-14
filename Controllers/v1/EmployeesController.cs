@@ -12,6 +12,7 @@ namespace WebApi.Controllers.v1;
 /// </summary>
 [Produces("application/json")]
 [ApiController]
+[ApiExplorerSettings(GroupName = "internal")]
 [Route("v1/[controller]")]
 public class EmployeesController : Controller
 {
