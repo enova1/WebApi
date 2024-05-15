@@ -1,9 +1,16 @@
 ﻿namespace WebApi.Services;
 
-public abstract class NotificationService
+/// <summary>
+/// Notification Service
+/// </summary>
+public class NotificationService : INotificationService
 {
-    public static void NotifyProcessingCompletion()
+    /// <summary>
+    /// Notifies the completion of a Hangfire process
+    /// </summary>
+    /// <param name="message"></param>
+    public void NotifyProcessingCompletion(string message)
     {
-        Console.WriteLine("DONE");
+        Console.WriteLine($"Completed: {message}");
     }
 }

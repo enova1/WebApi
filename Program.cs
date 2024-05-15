@@ -5,6 +5,7 @@ using Hangfire.Dashboard;
 using Hangfire.EntityFrameworkCore;
 using WebApi.Services.Hangfire;
 using Microsoft.OpenApi.Models;
+using WebApi.Services.Hangfire.Helpers;
 
 namespace WebApi;
 
@@ -39,8 +40,7 @@ public static class Program
         {
             options.AddPolicy("AllowSpecificOrigin",
                 build => build
-                    .WithOrigins(
-                        "https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
+                    .WithOrigins("https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
                     .AllowAnyMethod()
                     .AllowAnyHeader());
         });
@@ -72,6 +72,7 @@ public static class Program
         builder.Services.AddScoped<Delayed>();
         builder.Services.AddScoped<Recurring>();
         builder.Services.AddScoped<RunOnce>();
+        builder.Services.AddScoped<CronExpressionBuilder>();
 
         // Add services to the container.
         var app = builder.Build();
