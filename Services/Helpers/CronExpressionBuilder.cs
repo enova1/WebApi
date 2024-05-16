@@ -1,8 +1,7 @@
-﻿using Hangfire;
-using Models.Hangfire;
+﻿using Models.Hangfire;
 using Models.Hangfire.Enums;
 
-namespace WebApi.Services.Hangfire.Helpers;
+namespace WebApi.Services.Helpers;
 
 /// <summary>
 /// Builds a CRON expression based on the provided parameters.

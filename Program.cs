@@ -1,11 +1,11 @@
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using DataAccess;
-using Hangfire.Dashboard;
 using Hangfire.EntityFrameworkCore;
-using WebApi.Services.Hangfire;
 using Microsoft.OpenApi.Models;
-using WebApi.Services.Hangfire.Helpers;
+using WebApi.Services.Helpers;
+using WebApi.Services;
+using System.Text.Json;
 
 namespace WebApi;
 
@@ -17,7 +17,13 @@ public static class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllers();
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.JsonSerializerOptions.WriteIndented = true;
+            options.JsonSerializerOptions.IncludeFields = true;
+        });
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
@@ -46,8 +52,8 @@ public static class Program
         });
 
 
-        var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
-                                 ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
+        string hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
+                                          ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
 
 
         builder.Services.AddDbContext<ApplicationDbContext>();
@@ -66,12 +72,16 @@ public static class Program
                     SlidingInvisibilityTimeout = new TimeSpan(0, 5, 0),
                 }).UseDatabaseCreator());
 
-        builder.Services.AddHangfireServer(options => { options.WorkerCount = 1; });
+        string[] queues = builder.Configuration.GetSection("Hangfire:Queues").Value!.Split(',')
+                          ?? throw new InvalidOperationException("Queues not found in configuration.");
 
-        builder.Services.AddScoped<Continuations>();
-        builder.Services.AddScoped<Delayed>();
-        builder.Services.AddScoped<Recurring>();
-        builder.Services.AddScoped<RunOnce>();
+        builder.Services.AddHangfireServer(options =>
+        {
+            options.WorkerCount = 4;
+            options.Queues = queues;
+        });
+
+        builder.Services.AddScoped<BctReportReminder>();
         builder.Services.AddScoped<CronExpressionBuilder>();
 
         // Add services to the container.
@@ -101,7 +111,7 @@ public static class Program
             new DashboardOptions
             {
                 AppPath = "https://localhost:7098/swagger/index.html",
-                Authorization = Array.Empty<IDashboardAuthorizationFilter>(),
+                Authorization = [],
                 DarkModeEnabled = true,
                 DashboardTitle = "Hangfire BCT Dashboard",
                 DisplayStorageConnectionString = true,
