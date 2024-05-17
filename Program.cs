@@ -52,13 +52,13 @@ public static class Program
         });
 
 
-        string hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
+        string bctConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                                     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        builder.Services.AddDbContext<BctDbContext>(options => options.UseSqlServer(bctConnectionString));
+
+string hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
                                           ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
-
-
-        builder.Services.AddDbContext<ApplicationDbContext>();
-        //builder.Services.AddDbContext<EmployeeDbContext>();
-
+builder.Services.AddDbContext<ApplicationDbContext>();
         builder.Services.AddHangfire(configuration =>
             configuration.UseEFCoreStorage(dbContextOptionsBuilder =>
                     dbContextOptionsBuilder.UseSqlite(hangfireConnectionString),
