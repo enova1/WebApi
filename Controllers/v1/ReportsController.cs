@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Models.Hangfire;
+using Models.Hangfire.Enums;
 using Swashbuckle.AspNetCore.Annotations;
 using WebApi.Services;
+using WebApi.Services.Helpers;
 
 namespace WebApi.Controllers.v1
 {
@@ -27,9 +29,14 @@ namespace WebApi.Controllers.v1
         {
             try
             {
-                var test = recurring.CreateReminder(data.ClientId, data.TemplateId, data.Name, data.CronExpressionModel!);
-                
-                return !test.Item1 ? StatusCode(500, test.Item2) : Ok(test.Item2);
+                //TODO: I hate this. I need to refactor this to use a factory pattern.
+                string cron = data.CronExpressionModel != null
+                    ? CronExpressionBuilder.Build(data.CronExpressionModel)
+                    : CronExpressionBuilder.Build((CronOptionEnum)data.CronOption!);
+
+                var results = recurring.CreateReminder(data.ClientId, data.TemplateId, data.Name, cron);
+
+                return !results.Item1 ? StatusCode(500, results.Item2) : Ok(results.Item2);
             }
             catch (Exception e)
             {
