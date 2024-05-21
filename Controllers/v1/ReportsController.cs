@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Models.Hangfire;
-using Models.Hangfire.Enums;
 using Swashbuckle.AspNetCore.Annotations;
+using WebApi.Models;
+using WebApi.Models.Enums;
 using WebApi.Services;
 using WebApi.Services.Helpers;
 

@@ -1,5 +1,5 @@
-﻿using Models.Hangfire;
-using Models.Hangfire.Enums;
+﻿using WebApi.Models;
+using WebApi.Models.Enums;
 
 namespace WebApi.Services.Helpers;
 
