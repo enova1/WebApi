@@ -10,7 +10,7 @@ public class BctReportReminder(ILogger<BctReportReminder> logger, string timeZon
     {
         try
         {
-            RecurringJob.AddOrUpdate<BctReport>($"{clientId}:{jobName}", x => x.SendReminderEmail(clientId, jobName, templateId), cron, queue: queue);
+            RecurringJob.AddOrUpdate<BctReport>($"{clientId}:{jobName}", x => x.SendReminderEmail(templateId), cron, queue: queue);
             logger.LogInformation($"{jobName} has been scheduled successfully: {TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(timeZone)):MM/dd/yyyy hh:mm:ss tt}");
 
             return (true, $"{jobName} has been scheduled successfully: {TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById(timeZone)):MM/dd/yyyy hh:mm:ss tt}");
