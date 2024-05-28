@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using WebApi.Services.Helpers;
 using WebApi.Services;
 using System.Text.Json;
+using System.Globalization;
 
 namespace WebApi;
 
@@ -15,6 +16,7 @@ public static class Program
     {
         // Create the builder and services
         var builder = WebApplication.CreateBuilder(args);
+
 
         // Add services to the container.
         builder.Services.AddControllers().AddJsonOptions(options =>
@@ -46,7 +48,7 @@ public static class Program
         {
             options.AddPolicy("AllowSpecificOrigin",
                 build => build
-                    .WithOrigins("https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
+                    .WithOrigins("https://localhost:44343/") // Allow only this origin can be changed to allow multiple origins with a list of strings
                     .AllowAnyMethod()
                     .AllowAnyHeader());
         });
@@ -54,7 +56,9 @@ public static class Program
 
         string bctConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                                      ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
         builder.Services.AddDbContext<BctDbContext>(options => options.UseSqlServer(bctConnectionString));
+
 
 string hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
                                           ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
@@ -82,7 +86,6 @@ builder.Services.AddDbContext<ApplicationDbContext>();
         });
 
         builder.Services.AddScoped<BctReportReminder>();
-        builder.Services.AddScoped<CronExpressionBuilder>();
 
         // Add services to the container.
         var app = builder.Build();

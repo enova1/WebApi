@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WebApi.Models;
-using WebApi.Models.Enums;
 using WebApi.Services;
-using WebApi.Services.Helpers;
 
 namespace WebApi.Controllers.v1
 {
@@ -25,16 +23,26 @@ namespace WebApi.Controllers.v1
         [ProducesResponseType(typeof(IDictionary<string, string>), 401)]
         [ProducesResponseType(typeof(IDictionary<string, string>), 500)]
         [HttpPost("reminder")]
-        public IActionResult RecurringActionResult([FromBody] JobRequest data)
+        public IActionResult RecurringActionResult([FromBody] BtcRptTemplateReminderRequest data)
         {
             try
             {
-                //TODO: I hate this. I need to refactor this to use a factory pattern.
-                string cron = data.CronExpressionModel != null
-                    ? CronExpressionBuilder.Build(data.CronExpressionModel)
-                    : CronExpressionBuilder.Build((CronOptionEnum)data.CronOption!);
+                var results = recurring.CreateReminder(data.Month, data.ReminderId, data.JobName, data.CronExpressionModel);
 
-                var results = recurring.CreateReminder(data.ClientId, data.TemplateId, data.Name, cron);
+                return !results.Item1 ? StatusCode(500, results.Item2) : Ok(results.Item2);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("reminder")]
+        public IActionResult DeleteRecurringActionResult([FromQuery] string jobName)
+        {
+            try
+            {
+                var results = recurring.RemoveReminder(jobName);
 
                 return !results.Item1 ? StatusCode(500, results.Item2) : Ok(results.Item2);
             }

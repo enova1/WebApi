@@ -1,24 +1,15 @@
 ﻿
-using WebApi.Models.Enums;
-
 namespace WebApi.Models;
 
-public class JobRequest
+public class BtcRptTemplateReminderRequest
 {
-    public required int ClientId { get; set; }
 
-    public required string Name { get; set; }
+    public required string JobName { get; set; }
 
-    public required int TemplateId { get; set; }
+    public required string Month { get; set; }
 
-    /// <summary>
-    /// CronOptionEnum (hangfire.Cron) to set the Cron by option
-    /// </summary>
-    public CronOptionEnum? CronOption { get; set; }
+    public required int ReminderId { get; set; }
 
-    /// <summary>
-    /// Pass in the CronExpression to set the Cron by expression
-    /// </summary>
-    public CronExpressionModel? CronExpressionModel { get; set; }
+    public required CronExpressionModel CronExpressionModel { get; set; }
 
 }
