@@ -2,3 +2,9 @@
 
 # CS0618: Type or member is obsolete
 dotnet_diagnostic.CS0618.severity = none
+
+# CA2254: Template should be a static expression
+dotnet_diagnostic.CA2254.severity = none
+
+# CA1848: Use the LoggerMessage delegates
+dotnet_diagnostic.CA1848.severity = none
