@@ -121,7 +121,7 @@ builder.Services.AddDbContext<ApplicationDbContext>();
             });
 
         // Schedule a recurring jobs here that run without interaction from the UI.
-        RecurringJob.AddOrUpdate<BctContracts>("Contract-Expiration-30", x => x.CheckExpiration(-20), Cron.Daily, queue: "email");
+        RecurringJob.AddOrUpdate<BctContracts>("Contract-Expiration-30", x => x.CheckExpiration(-30), Cron.Daily, queue: "email");
         RecurringJob.AddOrUpdate<BctContracts>("Contract-Expiration-180", x => x.CheckExpiration(-180), Cron.Daily, queue: "email");
 
 

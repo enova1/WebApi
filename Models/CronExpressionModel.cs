@@ -1,14 +1,16 @@
 ﻿
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBePrivate.Global
 namespace WebApi.Models;
 
 
-public abstract class CronExpressionModel()
+public class CronExpressionModel()
 {
-    private string Minute { get; set; } = "*";
-    private string Hour { get; set; } = "*";
-    private string DayOfMonth { get; set; } = "*";
-    private string Month { get; set; } = "*";
-    private string DayOfWeek { get; set; } = "*";
+    public string Minute { get; set; } = "*";
+    public string Hour { get; set; } = "*";
+    public string DayOfMonth { get; set; } = "*";
+    public string Month { get; set; } = "*";
+    public string DayOfWeek { get; set; } = "*";
 
 
     public override string ToString()
