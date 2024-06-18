@@ -115,7 +115,7 @@ builder.Services.AddDbContext<ApplicationDbContext>();
                 AppPath = "https://localhost:7098/swagger/index.html",
                 Authorization = [],
                 DarkModeEnabled = true,
-                DashboardTitle = "Hangfire BCT Dashboard",
+                DashboardTitle = "Hangfire BlackCat Dashboard",
                 DisplayStorageConnectionString = true,
                 DefaultRecordsPerPage = 10
             });
