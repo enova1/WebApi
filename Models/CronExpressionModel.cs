@@ -2,13 +2,13 @@
 namespace WebApi.Models;
 
 
-public class CronExpressionModel()
+public abstract class CronExpressionModel()
 {
-    public string Minute { get; set; } = "*";
-    public string Hour { get; set; } = "*";
-    public string DayOfMonth { get; set; } = "*";
-    public string Month { get; set; } = "*";
-    public string DayOfWeek { get; set; } = "*";
+    private string Minute { get; set; } = "*";
+    private string Hour { get; set; } = "*";
+    private string DayOfMonth { get; set; } = "*";
+    private string Month { get; set; } = "*";
+    private string DayOfWeek { get; set; } = "*";
 
 
     public override string ToString()
