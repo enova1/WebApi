@@ -1,6 +1,5 @@
 ﻿using BCT_Scheduler;
 using Hangfire;
-using System.Text.RegularExpressions;
 using WebApi.Models;
 using WebApi.Services.Helpers;
 

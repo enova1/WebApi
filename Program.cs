@@ -3,10 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using DataAccess;
 using Hangfire.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using WebApi.Services.Helpers;
 using WebApi.Services;
 using System.Text.Json;
-using System.Globalization;
+using BCT_Scheduler;
 
 namespace WebApi;
 
@@ -120,6 +119,11 @@ builder.Services.AddDbContext<ApplicationDbContext>();
                 DisplayStorageConnectionString = true,
                 DefaultRecordsPerPage = 10
             });
+
+        // Schedule a recurring jobs here that run without interaction from the UI.
+        RecurringJob.AddOrUpdate<BctContracts>("Contract-Expiration-30", x => x.CheckExpiration(-20), Cron.Daily, queue: "email");
+        RecurringJob.AddOrUpdate<BctContracts>("Contract-Expiration-180", x => x.CheckExpiration(-180), Cron.Daily, queue: "email");
+
 
         // Run the application.
         app.Run();
