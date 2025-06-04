@@ -12,14 +12,13 @@ namespace WebApi.Controllers.v1;
 /// </summary>
 [Produces("application/json")]
 [ApiController]
-[ApiExplorerSettings(GroupName = "internal")]
 [Route("v1/[controller]")]
 public class EmployeesController : Controller
 {
-    private readonly EmployeeDbContext _employeeDbContext;
+    private readonly ApplicationDbContext _employeeDbContext;
 
     /// <inheritdoc />
-    public EmployeesController(EmployeeDbContext context)
+    public EmployeesController(ApplicationDbContext context)
     {
         _employeeDbContext = context;
     }

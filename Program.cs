@@ -1,11 +1,6 @@
-using Hangfire;
-using Microsoft.EntityFrameworkCore;
 using DataAccess;
-using Hangfire.Dashboard;
-using Hangfire.EntityFrameworkCore;
-using WebApi.Services.Hangfire;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using WebApi.Services.Hangfire.Helpers;
 
 namespace WebApi;
 
@@ -24,13 +19,13 @@ public static class Program
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Hangfire Microservice",
-                Description = "This Api Microservice is the main Hangfire scheduler service.</br></br><a href='https://localhost:7098/hangfire'>Hangfire dashboard</a>",
+                Title = "Web API",
+                Description = "This Api Microservice is for demonstration purposed only.",
                 TermsOfService = new Uri("https://blazorui20230314133145.azurewebsites.net/privacy-policy"),
                 Contact = new OpenApiContact
                 {
                     Name = "API Support",
-                    Email = "Support@B2Gnow.com",
+                    Email = "lazer8701@gmail.com",
                     Url = new Uri("https://blazorui20230314133145.azurewebsites.net")
                 }
             });
@@ -45,34 +40,17 @@ public static class Program
                     .AllowAnyHeader());
         });
 
-
-        var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection")
-                                 ?? throw new InvalidOperationException("Connection string 'HangfireConnection' not found.");
-
-
-        builder.Services.AddDbContext<ApplicationDbContext>();
+        //builder.Services.AddDbContext<ApplicationDbContext>();
         //builder.Services.AddDbContext<EmployeeDbContext>();
 
-        builder.Services.AddHangfire(configuration =>
-            configuration.UseEFCoreStorage(dbContextOptionsBuilder =>
-                    dbContextOptionsBuilder.UseSqlite(hangfireConnectionString),
-                new EFCoreStorageOptions
-                {
-                    CountersAggregationInterval = new TimeSpan(0, 5, 0),
-                    DistributedLockTimeout = new TimeSpan(0, 10, 0),
-                    JobExpirationCheckInterval = new TimeSpan(0, 30, 0),
-                    QueuePollInterval = new TimeSpan(0, 0, 15),
-                    Schema = string.Empty,
-                    SlidingInvisibilityTimeout = new TimeSpan(0, 5, 0),
-                }).UseDatabaseCreator());
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+        builder.Services.AddSingleton<IConfiguration>(configuration);
 
-        builder.Services.AddHangfireServer(options => { options.WorkerCount = 1; });
-
-        builder.Services.AddScoped<Continuations>();
-        builder.Services.AddScoped<Delayed>();
-        builder.Services.AddScoped<Recurring>();
-        builder.Services.AddScoped<RunOnce>();
-        builder.Services.AddScoped<CronExpressionBuilder>();
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         // Add services to the container.
         var app = builder.Build();
@@ -94,19 +72,6 @@ public static class Program
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
-
-        // Enable Hangfire dashboard
-        app.UseHangfireDashboard(
-            "/hangfire",
-            new DashboardOptions
-            {
-                AppPath = "https://localhost:7098/swagger/index.html",
-                Authorization = Array.Empty<IDashboardAuthorizationFilter>(),
-                DarkModeEnabled = true,
-                DashboardTitle = "Hangfire BCT Dashboard",
-                DisplayStorageConnectionString = true,
-                DefaultRecordsPerPage = 10
-            });
 
         // Run the application.
         app.Run();

@@ -8,35 +8,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\v1\EmployeesController.cs" />
+    <Compile Remove="Logic\**" />
+    <Compile Remove="Services\Hangfire\**" />
+    <Content Remove="Logic\**" />
+    <Content Remove="Services\Hangfire\**" />
+    <EmbeddedResource Remove="Logic\**" />
+    <EmbeddedResource Remove="Services\Hangfire\**" />
+    <None Remove="Logic\**" />
+    <None Remove="Services\Hangfire\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="app.db" />
-    <None Remove="app.db-shm" />
-    <None Remove="app.db-wal" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.12" />
-    <PackageReference Include="Hangfire.EntityFrameworkCore" Version="0.6.0" />
-    <PackageReference Include="Hangfire.SQLite.Core" Version="1.0.2" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.12" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\Hangfire\Helpers\" />
   </ItemGroup>
 
 </Project>
