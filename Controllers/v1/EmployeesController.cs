@@ -1,5 +1,4 @@
-﻿
-using DataAccess;
+﻿using DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Employee;
@@ -28,7 +27,7 @@ public class EmployeesController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> GetTask()
+    public async Task<IActionResult> GetEmployeesTask()
     {
         var employees = await _employeeDbContext.Employees!
             .Include(e => e.EmployeePhones)
@@ -42,13 +41,14 @@ public class EmployeesController : Controller
     }
 
     /// <summary>
-    /// Filter the employees by phone number and zip code and display the results in the view Index view.
+    /// Filter the employees by phone number and zip code and display the
+    /// results in the view Index view.
     /// </summary>
     /// <param name="phone"></param>
     /// <param name="zipCode"></param>
     /// <returns></returns>
     [HttpGet("filterBy/")]
-    public async Task<IActionResult> FilterTask(string phone, string zipCode)
+    public async Task<IActionResult> FilterEmployeesTask(string phone, string zipCode)
     {
         var employees = await _employeeDbContext.Employees!
             .Include(e => e.EmployeePhones)
@@ -63,11 +63,12 @@ public class EmployeesController : Controller
     }
 
     /// <summary>
-    /// Display the list of employees with their full name, earliest hire date, latest hire date, and average length of employment in years. 
+    /// Display the list of employees with their full name, earliest hire date,
+    /// latest hire date, and average length of employment in years. 
     /// </summary>
     /// <returns></returns>
     [HttpGet("averageEmployment/")]
-    public async Task<IActionResult> AverageLengthTask()
+    public async Task<IActionResult> EmployeesAverageLengthTask()
     {
         var employees = await _employeeDbContext.Employees!
             .Select(e => new
@@ -88,7 +89,7 @@ public class EmployeesController : Controller
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("id")]
-    public async Task<IActionResult> GetDetailsTask(int id)
+    public async Task<IActionResult> GetEmployeeDetailsTask(int id)
     {
         if (_employeeDbContext.Employees == null) return BadRequest(id);
         var employees = await _employeeDbContext.Employees.FindAsync(id);
@@ -101,7 +102,7 @@ public class EmployeesController : Controller
     /// <param name="employees"></param>
     /// <returns></returns>
     [HttpPost()]
-    public async Task<IActionResult> Create(Employees employees)
+    public async Task<IActionResult> CreateEmployee([FromBody] Employees employees)
     {
         //TODO: Add the employee Create to EmployeeLibrary
         try
@@ -141,7 +142,7 @@ public class EmployeesController : Controller
         }
         catch (Exception e)
         {
-            return StatusCode(500,e.InnerException.Message);
+            return StatusCode(500, e.InnerException?.Message);
         }
     }
 
@@ -151,7 +152,7 @@ public class EmployeesController : Controller
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut, HttpPatch]
-    public async Task<IActionResult> Edit(Employees data)
+    public async Task<IActionResult> EditEmployee(Employees data)
     {
         //TODO: Add the employee Edit to EmployeeLibrary
         if (_employeeDbContext.Employees == null) return BadRequest(data);
@@ -196,7 +197,7 @@ public class EmployeesController : Controller
             var employee = await _employeeDbContext.Employees.FindAsync(id);
             if (employee == null)
             {
-                return NotFound(); // HTTP 404 Not Found if employee with the given id is not found
+                return NotFound();
             }
 
             _employeeDbContext.Employees.Remove(employee);
@@ -204,7 +205,7 @@ public class EmployeesController : Controller
 
         await _employeeDbContext.SaveChangesAsync();
 
-        return NoContent(); // HTTP 204 No Content to indicate successful deletion
+        return NoContent();
     }
 
 }

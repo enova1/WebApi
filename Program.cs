@@ -35,7 +35,7 @@ public static class Program
         {
             options.AddPolicy("AllowSpecificOrigin",
                 build => build
-                    .WithOrigins("https://localhost:7007") // Allow only this origin can be changed to allow multiple origins with a list of strings
+                    .WithOrigins("https://localhost:7007", "https://localhost:5173") // Allow only this origin can be changed to allow multiple origins with a list of strings
                     .AllowAnyMethod()
                     .AllowAnyHeader());
         });
